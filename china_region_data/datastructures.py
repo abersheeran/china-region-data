@@ -69,7 +69,12 @@ class Region(metaclass=SingletonRegion):
     def __contains__(self, other: object) -> bool:
         if not isinstance(other, Region):
             return NotImplemented
-        return other in self.下级行政区域
+        if self.行政级别 == 2:
+            return other.code.startswith(self.code[:4])
+        elif self.行政级别 == 1:
+            return other.code.startswith(self.code[:2])
+        else:
+            return False
 
     @property
     def 行政级别(self) -> int:
