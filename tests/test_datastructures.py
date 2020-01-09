@@ -16,6 +16,8 @@ def test_region():
     assert 深圳.上级行政地区 == 广东
     assert 南山.上级行政地区.上级行政地区 == 广东
     assert 南山 in 南山.上级行政地区
+    assert 南山 in 南山.上级行政地区.上级行政地区
+    assert not Region("合肥市") in 广东
 
 
 def test_region_error():
