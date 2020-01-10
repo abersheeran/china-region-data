@@ -65,6 +65,14 @@ typed-ast = ">=1.4.0"
 d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
 
 [[package]]
+category = "main"
+description = "A decorator for caching properties in classes."
+name = "cached-property"
+optional = false
+python-versions = "*"
+version = "1.5.1"
+
+[[package]]
 category = "dev"
 description = "Python package for providing Mozilla's CA Bundle."
 name = "certifi"
@@ -334,7 +342,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "903e82fa1957e8ea4b6967763e55929ed8878d69a875a0177d612579a7ce4051"
+content-hash = "027198ce2abd24dd2529feb38dc60a3b99765716269be8093196104490709a69"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -358,6 +366,10 @@ beautifulsoup4 = [
 black = [
     {file = "black-19.10b0-py36-none-any.whl", hash = "sha256:1b30e59be925fafc1ee4565e5e08abef6b03fe455102883820fe5ee2e4734e0b"},
     {file = "black-19.10b0.tar.gz", hash = "sha256:c2edb73a08e9e0e6f65a0e6af18b059b8b1cdd5bef997d7a0b181df93dc81539"},
+]
+cached-property = [
+    {file = "cached-property-1.5.1.tar.gz", hash = "sha256:9217a59f14a5682da7c4b8829deadbfc194ac22e9908ccf7c8820234e80a1504"},
+    {file = "cached_property-1.5.1-py2.py3-none-any.whl", hash = "sha256:3a026f1a54135677e7da5ce819b0c690f156f37976f3e30c5430740725203d7f"},
 ]
 certifi = [
     {file = "certifi-2019.11.28-py2.py3-none-any.whl", hash = "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"},

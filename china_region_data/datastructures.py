@@ -2,6 +2,8 @@ import os
 import json
 from typing import List, Dict, Tuple, Any, Optional, Union, NoReturn
 
+from cached_property import cached_property
+
 __all__ = ["Region"]
 
 
@@ -76,7 +78,7 @@ class Region(metaclass=SingletonRegion):
         else:
             return False
 
-    @property
+    @cached_property
     def 行政级别(self) -> int:
         """
         1. 省、直辖市、自治区
@@ -90,7 +92,7 @@ class Region(metaclass=SingletonRegion):
         else:
             return 3
 
-    @property
+    @cached_property
     def 上级行政地区(self) -> "Region":
         """
         上级行政地区
@@ -104,7 +106,7 @@ class Region(metaclass=SingletonRegion):
 
         raise RegionNoSuperiorError("不存在上级地区")
 
-    @property
+    @cached_property
     def 下级行政区域(self) -> List["Region"]:
         """
         下级行政地区列表
