@@ -21,6 +21,9 @@ for 省级行政地区 in 省级行政区域:
         for 县级行政地区 in 市级行政地区.下级行政区域:
             print("    ", 县级行政地区)
 
+北京 = Region("110000")
+assert 北京 == Region("北京市")
+
 广东 = Region("广东省")
 深圳 = Region("深圳市")
 南山 = Region("南山区")
