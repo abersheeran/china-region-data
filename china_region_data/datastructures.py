@@ -61,7 +61,7 @@ class Region(metaclass=SingletonRegion):
         self.name = name
 
     def __repr__(self) -> str:
-        return self.name
+        return self.fullname
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Region):
@@ -77,6 +77,14 @@ class Region(metaclass=SingletonRegion):
             return other.code.startswith(self.code[:2])
         else:
             return False
+
+    @cached_property
+    def fullname(self) -> str:
+        try:
+            name = self.上级行政地区.fullname + self.name
+        except RegionNoSuperiorError:
+            name = self.name
+        return name
 
     @cached_property
     def 行政级别(self) -> int:
@@ -102,7 +110,10 @@ class Region(metaclass=SingletonRegion):
             return Region(self.code[:-4] + "0000")
 
         if self.行政级别 == 3:
-            return Region(self.code[:-2] + "00")
+            try:
+                return Region(self.code[:-2] + "00")
+            except RegionNotFoundError:  # 直辖市区
+                return Region(self.code[:-4] + "0000")
 
         raise RegionNoSuperiorError("不存在上级地区")
 
