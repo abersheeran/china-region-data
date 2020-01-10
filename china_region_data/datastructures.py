@@ -120,15 +120,15 @@ class Region(metaclass=SingletonRegion):
             ]
 
         if self.行政级别 == 1:
-            return [
+            subo = [
                 Region(d["code"])
                 for d in filter(
                     lambda d: d["code"].startswith(self.code[:-4])
-                    and d["code"].endswith("00")
                     and d["code"] != self.code,
                     REGION_DATA,
                 )
             ]
+            return list(filter(lambda d: d.code.endswith("00"), subo)) or subo
 
         raise RegionNoSubordinateError("不存在下级地区")
 

@@ -21,6 +21,13 @@ def test_region():
     assert not Region("合肥市") in 广东
 
 
+def test_municipality_region():
+    北京 = Region("北京市")
+    assert 北京.下级行政区域
+    for 北京市区 in 北京.下级行政区域:
+        assert 北京市区.行政级别 == 3
+
+
 def test_region_error():
     广东 = Region("广东省")
     深圳 = Region("深圳市")
