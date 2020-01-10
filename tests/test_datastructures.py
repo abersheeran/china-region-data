@@ -11,6 +11,7 @@ def test_region():
     南山 = Region("南山区")
     assert 广东.name == "广东省"
     assert 广东.行政级别 == 1
+    assert 广东.下级行政区域
     for 广东城市 in 广东.下级行政区域:
         assert 广东城市.行政级别 == 2
     assert 深圳.上级行政地区 == 广东

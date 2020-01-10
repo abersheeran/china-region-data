@@ -123,7 +123,8 @@ class Region(metaclass=SingletonRegion):
             return [
                 Region(d["code"])
                 for d in filter(
-                    lambda d: d["code"].startswith(self.code[:-4] + "00")
+                    lambda d: d["code"].startswith(self.code[:-4])
+                    and d["code"].endswith("00")
                     and d["code"] != self.code,
                     REGION_DATA,
                 )
