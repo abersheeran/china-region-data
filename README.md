@@ -26,6 +26,9 @@ for 省级行政地区 in 省级行政区域:
 南山 = Region("南山区")
 
 assert 广东.name == "广东省"
+assert 广东.fullname == "广东省"
+assert 深圳.fullname == "广东省深圳市"
+assert 南山.fullname == "广东省深圳市南山区"
 
 assert 广东.行政级别 == 1
 
