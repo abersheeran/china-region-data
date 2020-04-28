@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "china-region-data"
-version = "0.1.5"
+version = "0.2.0"
 description = "中国行政区域数据"
 authors = ["abersheeran <me@abersheeran.com>"]
 readme = "README.md"

@@ -1,15 +1,15 @@
 from typing import List
 from .datastructures import Region, REGION_DATA
 
-__all__ = ["省级行政区域", "市级行政区域", "县级行政区域", "Region"]
+__all__ = ["provinces", "cities", "counties", "Region"]
 
 
-省级行政区域: List[Region] = [
+provinces: List[Region] = [
     Region(*data.values())
     for data in filter(lambda d: d["code"].endswith("0000"), REGION_DATA)
 ]
 
-市级行政区域: List[Region] = [
+cities: List[Region] = [
     Region(*data.values())
     for data in filter(
         lambda d: d["code"].endswith("00") and not d["code"].endswith("0000"),
@@ -17,7 +17,7 @@ __all__ = ["省级行政区域", "市级行政区域", "县级行政区域", "Re
     )
 ]
 
-县级行政区域: List[Region] = [
+counties: List[Region] = [
     Region(*data.values())
     for data in filter(lambda d: not d["code"].endswith("00"), REGION_DATA)
 ]

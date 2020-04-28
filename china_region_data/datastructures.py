@@ -46,7 +46,7 @@ class SingletonRegion(type):
             try:
                 instance = super().__call__(*args, **kwargs)
             except AssertionError:
-                raise RegionNotFoundError("No such region.") from None
+                raise RegionNotFoundError(f"不存在此地区: {key}") from None
             for _key in args:
                 cls.instances[_key] = instance
         return cls.instances[key]
@@ -71,9 +71,9 @@ class Region(metaclass=SingletonRegion):
     def __contains__(self, other: object) -> bool:
         if not isinstance(other, Region):
             return NotImplemented
-        if self.行政级别 == 2:
+        if self.level == 2:
             return other.code.startswith(self.code[:4])
-        elif self.行政级别 == 1:
+        elif self.level == 1:
             return other.code.startswith(self.code[:2])
         else:
             return False
@@ -81,14 +81,16 @@ class Region(metaclass=SingletonRegion):
     @cached_property
     def fullname(self) -> str:
         try:
-            name = self.上级行政地区.fullname + self.name
+            name = self.superior.fullname + self.name
         except RegionNoSuperiorError:
             name = self.name
         return name
 
     @cached_property
-    def 行政级别(self) -> int:
+    def level(self) -> int:
         """
+        行政级别
+
         1. 省、直辖市、自治区
         2. 市、省直辖县
         3. 县、县级市、直辖市区
@@ -101,28 +103,28 @@ class Region(metaclass=SingletonRegion):
             return 3
 
     @cached_property
-    def 上级行政地区(self) -> "Region":
+    def superior(self) -> "Region":
         """
         上级行政地区
         """
 
-        if self.行政级别 == 2:
+        if self.level == 2:
             return Region(self.code[:-4] + "0000")
 
-        if self.行政级别 == 3:
+        if self.level == 3:
             try:
                 return Region(self.code[:-2] + "00")
             except RegionNotFoundError:  # 直辖市区
                 return Region(self.code[:-4] + "0000")
 
-        raise RegionNoSuperiorError("不存在上级地区")
+        raise RegionNoSuperiorError(f"{self.name}不存在上级地区")
 
     @cached_property
-    def 下级行政区域(self) -> List["Region"]:
+    def subordinate(self) -> List["Region"]:
         """
         下级行政地区列表
         """
-        if self.行政级别 == 2:
+        if self.level == 2:
             return [
                 Region(d["code"])
                 for d in filter(
@@ -132,7 +134,7 @@ class Region(metaclass=SingletonRegion):
                 )
             ]
 
-        if self.行政级别 == 1:
+        if self.level == 1:
             subo = [
                 Region(d["code"])
                 for d in filter(
@@ -143,7 +145,7 @@ class Region(metaclass=SingletonRegion):
             ]
             return list(filter(lambda d: d.code.endswith("00"), subo)) or subo
 
-        raise RegionNoSubordinateError("不存在下级地区")
+        raise RegionNoSubordinateError(f"{self.name}不存在下级地区")
 
 
 list(map(lambda d: Region(*d.values()), REGION_DATA))

@@ -1,10 +1,10 @@
-from china_region_data import 省级行政区域, 市级行政区域, 县级行政区域
+from china_region_data import provinces, cities, counties
 
 
 def test_area():
-    for 省级行政地区 in 省级行政区域:
-        assert 省级行政地区.行政级别 == 1
-    for 市级行政地区 in 市级行政区域:
-        assert 市级行政地区.行政级别 == 2
-    for 县级行政地区 in 县级行政区域:
-        assert 县级行政地区.行政级别 == 3
+    for province in provinces:
+        assert province.level == 1
+    for city in cities:
+        assert city.level == 2
+    for county in counties:
+        assert county.level == 3
