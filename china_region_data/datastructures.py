@@ -1,55 +1,54 @@
 import os
+import re
 import json
-from typing import List, Dict, Tuple, Any, Optional, Union, NoReturn
+from typing import List, Dict, Tuple, Any
 
-from cached_property import cached_property
+from .utils import cached_property
+from .exceptions import (
+    RegionNotFoundError,
+    RegionNoSuperiorError,
+    RegionNoSubordinateError,
+)
 
 __all__ = ["Region"]
 
 
-class RegionError(Exception):
-    pass
-
-
-class RegionNotFoundError(RegionError):
-    pass
-
-
-class RegionNoSuperiorError(RegionError):
-    pass
-
-
-class RegionNoSubordinateError(RegionError):
-    pass
-
+CODE_PATTERN = re.compile(r"^\d+")
 
 with open(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json")
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json"),
+    encoding="utf8",
 ) as file:
     # 地区数据
-    REGION_DATA: List[Dict[str, str]] = json.load(file)
+    REGION_DATA: Dict[str, str] = json.load(file)
 
 
 class SingletonRegion(type):
     def __init__(
-        cls, name: str, bases: Tuple[type], namespace: Dict[str, Any],
+        cls,
+        name: str,
+        bases: Tuple[type],
+        namespace: Dict[str, Any],
     ) -> None:
         cls.instances: Dict[str, Region] = {}
         super().__init__(name, bases, namespace)
 
     def __call__(cls, *args, **kwargs) -> Any:
         if kwargs:
-            raise TypeError("Keyword argument not allowed.")
+            raise TypeError("Keyword arguments not allowed.")
 
-        key = args[0]
-        if key not in cls.instances:
-            try:
-                instance = super().__call__(*args, **kwargs)
-            except AssertionError:
-                raise RegionNotFoundError(f"不存在此地区: {key}") from None
-            for _key in args:
-                cls.instances[_key] = instance
-        return cls.instances[key]
+        code = args[0]
+        if code not in cls.instances:
+            if code not in REGION_DATA:
+                msg = f'不存在此地区"{code}"'
+                if not CODE_PATTERN.match(code):
+                    msg += "，可使用城市全称尝试查找"
+                raise RegionNotFoundError(msg)
+            # 创建 Region 类的实例对象
+            instance = super().__call__(code, REGION_DATA[code])
+            cls.instances[code] = instance
+            cls.instances[instance.fullname] = instance
+        return cls.instances[code]
 
 
 class Region(metaclass=SingletonRegion):
@@ -126,21 +125,19 @@ class Region(metaclass=SingletonRegion):
         """
         if self.level == 2:
             return [
-                Region(d["code"])
+                Region(d[0])
                 for d in filter(
-                    lambda d: d["code"].startswith(self.code[:-2])
-                    and d["code"] != self.code,
-                    REGION_DATA,
+                    lambda d: d[0].startswith(self.code[:-2]) and d[0] != self.code,
+                    REGION_DATA.items(),
                 )
             ]
 
         if self.level == 1:
             subo = [
-                Region(d["code"])
+                Region(d[0])
                 for d in filter(
-                    lambda d: d["code"].startswith(self.code[:-4])
-                    and d["code"] != self.code,
-                    REGION_DATA,
+                    lambda d: d[0].startswith(self.code[:-4]) and d[0] != self.code,
+                    REGION_DATA.items(),
                 )
             ]
             return list(filter(lambda d: d.code.endswith("00"), subo)) or subo
@@ -148,4 +145,4 @@ class Region(metaclass=SingletonRegion):
         raise RegionNoSubordinateError(f"{self.name}不存在下级地区")
 
 
-list(map(lambda d: Region(*d.values()), REGION_DATA))
+list(map(lambda t: Region(*t), REGION_DATA.items()))

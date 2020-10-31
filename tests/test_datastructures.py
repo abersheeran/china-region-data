@@ -1,5 +1,8 @@
-from china_region_data.datastructures import (
+import pytest
+
+from china_region_data import (
     Region,
+    RegionNotFoundError,
     RegionNoSubordinateError,
     RegionNoSuperiorError,
 )
@@ -7,8 +10,8 @@ from china_region_data.datastructures import (
 
 def test_region():
     广东 = Region("广东省")
-    深圳 = Region("深圳市")
-    南山 = Region("南山区")
+    深圳 = Region("广东省深圳市")
+    南山 = Region("广东省深圳市南山区")
     assert 广东.name == "广东省"
     assert 广东.level == 1
     assert 广东.subordinate
@@ -18,13 +21,16 @@ def test_region():
     assert 南山.superior.superior == 广东
     assert 南山 in 南山.superior
     assert 南山 in 南山.superior.superior
-    assert not Region("合肥市") in 广东
+
+    北京 = Region("110000")
+    assert 北京.name == 北京.fullname == "北京市"
+    assert 北京 not in 广东
 
 
 def test_full_name():
     广东 = Region("广东省")
-    深圳 = Region("深圳市")
-    南山 = Region("南山区")
+    深圳 = Region("广东省深圳市")
+    南山 = Region("广东省深圳市南山区")
 
     assert 广东.fullname == "广东省"
     assert 深圳.fullname == "广东省深圳市"
@@ -33,7 +39,7 @@ def test_full_name():
 
 def test_municipality_region():
     北京 = Region("北京市")
-    东城 = Region("东城区")
+    东城 = Region("北京市东城区")
     assert 北京.subordinate
     assert 东城.superior == 北京
     for 北京市区 in 北京.subordinate:
@@ -44,17 +50,16 @@ def test_municipality_region():
 
 def test_region_error():
     广东 = Region("广东省")
-    深圳 = Region("深圳市")
-    南山 = Region("南山区")
+    南山 = Region("广东省深圳市南山区")
 
-    try:
+    with pytest.raises(RegionNoSuperiorError):
         广东.superior
-        assert False
-    except RegionNoSuperiorError:
-        pass
 
-    try:
+    with pytest.raises(RegionNoSubordinateError):
         南山.subordinate
-        assert False
-    except RegionNoSubordinateError:
-        pass
+
+    with pytest.raises(RegionNotFoundError, match='不存在此地区"深圳市"，可使用城市全称尝试查找'):
+        Region("深圳市")
+
+    with pytest.raises(RegionNotFoundError, match='不存在此地区"10000"'):
+        Region("10000")
